@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f7f3">
+  <meta name="description" content="KEEL is a procedural shipyard. Turn a budget and a seed into a unique, fully modeled fishing vessel, then step inside its bridge.">
+  <title>KEEL / The Procedural Shipyard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700;750&family=IBM+Plex+Mono:wght@400;450;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script type="importmap">
+    {"imports":{"three":"https://unpkg.com/three@0.179.1/build/three.module.js","three/addons/":"https://unpkg.com/three@0.179.1/examples/jsm/"}}
+  </script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-keel" viewBox="0 0 40 44"><path d="M20 3 35 11v15L20 41 5 26V11Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m5 11 15 9 15-9M20 20v21M12 8l8 5 8-5M5 18l15 9 15-9M5 25l15 9 15-9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m20 3 8 4.3-8 5-8-5Z" fill="#c8ed83" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h5m4 0h7M4 17h10m4 0h2"/><circle cx="11" cy="7" r="2"/><circle cx="16" cy="17" r="2"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 6h3c5 0 7 12 12 12h3m-4-4 4 4-4 4M3 18h3c1.7 0 3.2-1.5 4.5-3.7M14 9.6C15.4 7.4 16.7 6 18 6h3m-4-4 4 4-4 4"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="8" cy="8" r=".7"/><circle cx="16" cy="8" r=".7"/><circle cx="12" cy="12" r=".7"/><circle cx="8" cy="16" r=".7"/><circle cx="16" cy="16" r=".7"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="m12 3 9 5v9l-9 5-9-5V8Zm0 10 9-5M12 13 3 8m9 5v9M7.5 5.5l9 5"/></symbol>
+    <symbol id="i-helm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v8m0 4v8M2 12h8m4 0h8M5 5l5.6 5.6m2.8 2.8L19 19M5 19l5.6-5.6m2.8-2.8L19 5"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 1 8M3 4v6h6"/></symbol>
+    <symbol id="i-fullscreen" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="m3 16 13-13 5 5L8 21ZM13 6l3 3M9 10l3 3M5 14l3 3"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="6"/><path d="M12 6v4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/></symbol>
+  </defs></svg>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="KEEL home"><svg class="brand-icon"><use href="#i-keel"/></svg><span class="wordmark">KEEL</span><span class="brand-caption">THE PROCEDURAL<br>SHIPYARD</span></a>
+    <nav class="topnav" aria-label="Workspace"><button class="active" id="studio-nav">Design studio</button><button id="fleet-nav">My fleet <span class="fleet-count" id="fleet-count">00</span></button></nav>
+    <div class="top-actions"><button class="text-button" id="help-button">How it works</button><div class="export-wrap"><button class="export-button" id="export-button" aria-expanded="false" aria-controls="export-menu"><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-download"/></svg><span>Export vessel</span><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-chevron"/></svg></button><div class="menu hidden" id="export-menu"><button id="export-glb">3D model <small>.GLB</small></button><button id="export-image">Studio photograph <small>.PNG</small></button><button id="export-recipe">Vessel blueprint <small>.JSON</small></button></div></div>
+  </header>
+  <main class="workspace">
+    <button class="config-backdrop" id="config-backdrop" aria-label="Close vessel configuration"></button>
+    <aside class="sidebar" id="sidebar" aria-label="Vessel configuration">
+      <div class="section-index"><span class="eyebrow">01 / The design brief</span><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-sliders"/></svg></div>
+      <h1>Possibility, by design.</h1>
+      <form id="design-form" novalidate>
+        <label class="field-label" for="vessel-cost">Vessel budget <small>USD</small></label>
+        <div class="budget-field"><span class="budget-symbol">$</span><input id="vessel-cost" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="5,000,000" aria-describedby="input-error"></div>
+        <div class="presets" aria-label="Budget presets"><button type="button" data-cost="1000">$1K</button><button type="button" data-cost="250000">$250K</button><button type="button" data-cost="5000000" class="active">$5M</button><button type="button" data-cost="80000000">$80M</button><button type="button" data-cost="1000000000">$1B</button></div>
+        <label class="field-label seed-label" for="vessel-seed">Design seed <small>YOUR VESSEL'S DNA</small></label>
+        <div class="seed-field"><span class="hash">#</span><input id="vessel-seed" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" value="42819" aria-label="Design seed, an integer from 0 to 4294967295"><button type="button" id="seed-button" title="Randomize seed and generate a new vessel" aria-label="Randomize seed and generate"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-dice"/></svg></button></div>
+        <p id="input-error" class="input-error hidden" role="alert"></p>
+        <div class="actions"><button type="submit" class="generate" id="generate-button"><span id="generate-text">Generate vessel</span><svg fill="none" stroke="currentColor" stroke-width="1.6"><use href="#i-arrow"/></svg></button><button type="button" class="randomize" id="random-button"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-shuffle"/></svg><span>Surprise me, same budget</span></button></div>
+      </form>
+      <section class="spec-section" aria-label="Generated vessel specifications">
+        <div class="section-index"><span class="eyebrow">02 / Vessel particulars</span><span class="eyebrow" style="color:#9da88f">EST.</span></div>
+        <div class="tier-heading"><span class="tier-number" id="tier-number">02</span><div><strong id="tier-name">Deep-sea commercial</strong><small id="tier-range">$500K to $15M</small></div></div>
+        <div class="tier-scale" aria-hidden="true"><i class="filled"></i><i class="filled"></i><i class="current"></i><i></i><i></i></div>
+        <dl class="spec-list"><div class="spec-row"><dt>Length overall</dt><dd id="spec-length">-- m</dd></div><div class="spec-row"><dt>Beam</dt><dd id="spec-beam">-- m</dd></div><div class="spec-row"><dt>Design draft</dt><dd id="spec-draft">-- m</dd></div><div class="spec-row"><dt>Displacement</dt><dd id="spec-displacement">-- t</dd></div><div class="spec-row"><dt>Top speed</dt><dd id="spec-speed">-- kn</dd></div><div class="spec-row"><dt>Fish hold</dt><dd id="spec-hold">-- t</dd></div><div class="spec-row material-row"><dt>Hull material</dt><dd id="spec-material">Marine-grade steel</dd></div></dl>
+        <details class="equipment"><summary><span>Onboard equipment <span class="mono muted" id="equipment-count" style="margin-left:6px">00</span></span><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-chevron"/></svg></summary><ul id="equipment-list"></ul></details>
+        <details class="equipment"><summary><span>Parts registry <span class="mono muted" id="parts-count" style="margin-left:6px">00</span></span><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-chevron"/></svg></summary><ul id="parts-list"></ul><p class="engineering-note">Each part carries a series ID minted from this vessel's DNA, ready for upgrade trees. Concept design only, not certified naval calculations.</p></details>
+      </section>
+    </aside>
+    <section class="viewport" id="viewport" aria-label="Interactive 3D vessel viewer">
+      <div class="view-heading"><div class="model-overline"><span class="live-dot"></span>ONE OF A KIND. BY NATURE.</div><div class="model-name-row"><h2 id="vessel-name">Northstar</h2><button class="save-button" id="save-button" aria-label="Save this vessel to My fleet" title="Save to My fleet" aria-pressed="false"><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-bookmark"/></svg></button></div><p class="model-subtitle"><span id="vessel-type" style="padding:0;color:inherit">Offshore fishing vessel</span><span>/</span><span id="vessel-id" class="mono" style="padding:0;font-size:9px;color:inherit">K-042819</span></p></div>
+      <div class="view-tools"><button class="tool-button" id="wireframe-button" data-tooltip="Wireframe" aria-label="Toggle wireframe" aria-pressed="false"><svg fill="none" stroke="currentColor" stroke-width="1.3"><use href="#i-cube"/></svg></button><button class="tool-button" id="dimensions-button" data-tooltip="Dimensions" aria-label="Toggle dimensions" aria-pressed="false"><svg fill="none" stroke="currentColor" stroke-width="1.3"><use href="#i-ruler"/></svg></button><button class="tool-button" id="reset-button" data-tooltip="Reset camera [R]" aria-label="Reset camera"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-reset"/></svg></button><button class="tool-button" id="fullscreen-button" data-tooltip="Full screen" aria-label="Toggle full screen"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-fullscreen"/></svg></button></div>
+      <button class="mobile-config" id="mobile-config" aria-expanded="false" aria-controls="sidebar"><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-sliders"/></svg>Configure vessel</button>
+      <div class="bridge-info hidden" id="bridge-info"><strong id="bridge-title">THE COMMAND BRIDGE</strong><p>Drag to look. WASD to move. Click radar to change range.</p></div>
+      <div class="tour-chips hidden" id="tour-chips" role="tablist" aria-label="Interior tour"><button class="active" data-view="helm">Wheelhouse</button></div>
+      <div class="busy-indicator hidden" id="busy-indicator"><span class="spinner"></span>Drawing new possibilities...</div>
+      <div class="canvas-meta"><div class="hull-label" id="hull-label">CUSTOM HULL / WELDED STEEL</div><div class="palette" id="palette"><span style="background:#326d66"></span><span style="background:#e7e5d8"></span><span style="background:#c9974a"></span><span style="background:#9b5544"></span></div></div>
+      <div class="orbit-hint"><svg fill="none" stroke="currentColor" stroke-width="1.3"><use href="#i-mouse"/></svg><span id="orbit-hint">Drag to orbit &middot; Scroll to explore</span></div>
+      <div class="dimensions-label hidden" id="length-label"></div><div class="dimensions-label hidden" id="beam-label"></div>
+      <div class="viewport-bottom"><div style="position:relative"><button class="lighting-button" id="lighting-button" aria-expanded="false" aria-controls="environment-panel"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-sun"/></svg><span id="lighting-label">Studio lighting</span><svg fill="none" stroke="currentColor" stroke-width="1.5"><use href="#i-chevron"/></svg></button><div class="environment-panel hidden" id="environment-panel"><h3>Studio controls.</h3><div class="setting-row"><span>Slow orbit</span><button class="switch" id="autorotate-toggle" role="switch" aria-label="Slow orbit" aria-checked="false"></button></div><div class="setting-row"><span>Fishing rod rig</span><button class="switch" id="fishing-rig" role="switch" aria-label="Add or remove the fishing rod rig" aria-checked="true"></button></div><div class="setting-row"><span>Open bridge roof</span><button class="switch" id="roof-toggle" role="switch" aria-label="Open bridge roof" aria-checked="false"></button></div><div class="setting-row"><span>Sea preview</span><button class="switch" id="sea-toggle" role="switch" aria-label="Sea preview" aria-checked="false"></button></div><label class="range-label" for="time-slider">Time of day <output id="time-output">NOON</output></label><input id="time-slider" type="range" min="0" max="100" value="40"><div class="range-captions"><span>DAWN</span><span>NOON</span><span>DUSK</span><span>NIGHT</span></div><label class="range-label" for="weather-slider">Sea state <output id="weather-output">CALM</output></label><input id="weather-slider" type="range" min="0" max="100" value="12"><div class="range-captions"><span>CALM</span><span>ROUGH</span><span>STORM</span></div></div></div>
+        <div class="camera-switch" aria-label="Camera mode"><button class="active" id="exterior-button" aria-pressed="true"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-cube"/></svg>Exterior</button><button id="bridge-button" aria-pressed="false"><svg fill="none" stroke="currentColor" stroke-width="1.3"><use href="#i-helm"/></svg>Inner bridge</button></div><div class="scale-indicator"><span class="scale-line"></span><span id="scale-text">10 METERS</span></div>
+      </div>
+      <div class="loading" id="loading"><svg class="loading-mark"><use href="#i-keel"/></svg><p id="loading-title">LAYING THE KEEL</p><small id="loading-detail">A little mathematics. A lot of character.</small><button class="retry hidden" id="retry-button">Reload the shipyard</button></div>
+    </section>
+  </main>
+  <footer class="statusbar"><div><span class="status-dot"></span><span id="engine-status">PROCEDURAL ENGINE</span><span class="status-separator">/</span><span>LOCAL GENERATION</span></div><div class="status-center">NOT A TEMPLATE. A NEW VESSEL.</div><div class="status-right"><span class="performance" id="render-status">INITIALIZING</span><span class="status-separator">/</span><span id="dna-status">DNA 00000000</span><span class="status-engine">KEEL 1.0</span></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="help-dialog"><div class="dialog-heading"><h2>A ship of your own.</h2><button class="dialog-close" data-close="help-dialog" aria-label="Close help">&#215;</button></div><p class="help-intro">KEEL turns a budget and a seed into a complete procedural vessel. No downloaded ship models. No two briefs alike.</p><div class="help-step"><span>01</span><div><strong>Start with a possibility</strong><p>Enter any budget from $100. Even a one-dollar change redraws the hull, arrangement, and character.</p></div></div><div class="help-step"><span>02</span><div><strong>Find your favorite</strong><p>Randomize for a new vessel at the same budget. The same cost and seed always recreate your design.</p></div></div><div class="help-step"><span>03</span><div><strong>Get closer</strong><p>Orbit the exterior, then step inside. Walk the wheelhouse, climb to furnished crew decks, click the radar to change range, open the roof, or strip the wireframe.</p></div></div><div class="help-step"><span>04</span><div><strong>Fit her out</strong><p>Toggle the fishing rod rig and outriggers on or off, and watch propellers, radar, wipers, oars, crane hooks, and pennants move.</p></div></div><div class="shortcuts"><span><kbd>N</kbd>New vessel</span><span><kbd>B</kbd>Enter / exit bridge</span><span><kbd>R</kbd>Reset view</span><span><kbd>D</kbd>Dimensions</span></div><p class="engineering-note">A creative visualization tool, not a shipbuilding specification. Your fleet stays in this browser. 3D rendering requires WebGL 2 and an internet connection to load Three.js.</p></dialog>
+  <dialog id="parts-dialog" class="parts-dialog" aria-labelledby="part-title">
+    <div class="dialog-heading"><h2>Parts showroom.</h2><button class="dialog-close" data-close="parts-dialog" aria-label="Close parts showroom">&#215;</button></div>
+    <div class="showroom">
+      <div class="showroom-stage" id="showroom-stage"><span class="stage-hint mono">DRAG TO TURN</span></div>
+      <div class="showroom-info">
+        <div class="eyebrow muted" id="part-index">PART 01 / 07</div>
+        <h3 id="part-title">Radar array</h3>
+        <div class="part-mark mono" id="part-mark">MARK 1</div>
+        <p id="part-detail" class="part-detail"></p>
+        <p class="engineering-note">Every upgrade rerolls this part's design genes. Its style, proportions, blade or spoke count, and rake all change, while the hull and every other part stay exactly as built.</p>
+        <div class="showroom-actions">
+          <button class="generate" id="part-upgrade"><span>Upgrade to next mark</span><svg fill="none" stroke="currentColor" stroke-width="1.6"><use href="#i-arrow"/></svg></button>
+          <button class="randomize" id="part-restore"><svg fill="none" stroke="currentColor" stroke-width="1.4"><use href="#i-reset"/></svg><span>Restore factory part</span></button>
+          <div class="showroom-nav"><button id="part-prev" aria-label="Previous part">&#8592; Previous</button><button id="part-next" aria-label="Next part">Next &#8594;</button></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="fleet-dialog"><div class="dialog-heading"><h2>Your fleet.</h2><button class="dialog-close" data-close="fleet-dialog" aria-label="Close fleet">&#215;</button></div><p class="help-intro">Good designs deserve another voyage.</p><div class="fleet-list" id="fleet-list"></div></dialog>
+  <script>
+    document.getElementById('retry-button').addEventListener('click',()=>location.reload());
+    window.keelLoadingTimeout=setTimeout(()=>{if(!window.keelReady){document.getElementById('loading').classList.add('error');document.getElementById('loading-title').textContent='THE SHIPYARD IS TAKING A MOMENT';document.getElementById('loading-detail').textContent='Three.js is still loading. Check your internet connection and allow WebGL 2 in your browser.';document.getElementById('retry-button').classList.remove('hidden');}},22000);
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
